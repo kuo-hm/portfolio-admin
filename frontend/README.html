@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <title>Portfolio Admin Dashboard</title>
+            <style>
+/* From extension vscode.github */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.vscode-dark img[src$=\#gh-light-mode-only],
+.vscode-light img[src$=\#gh-dark-mode-only],
+.vscode-high-contrast:not(.vscode-high-contrast-light) img[src$=\#gh-light-mode-only],
+.vscode-high-contrast-light img[src$=\#gh-dark-mode-only] {
+	display: none;
+}
+
+/* From extension bierner.markdown-checkbox */
+.contains-task-list {
+    padding-left: 0;
+}
+
+.contains-task-list li {
+    margin-left: 24px;
+}
+
+.contains-task-list .task-list-item {
+    list-style: none;
+    padding-left: 0;
+    margin-left: 0;
+}
+
+.contains-task-list .contains-task-list {
+    padding-left: 20px;
+} 
+</style>
+            
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/markdown.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/highlight.css">
+<style>
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe WPC', 'Segoe UI', system-ui, 'Ubuntu', 'Droid Sans', sans-serif;
+                font-size: 14px;
+                line-height: 1.6;
+            }
+        </style>
+        <style>
+.task-list-item {
+    list-style-type: none;
+}
+
+.task-list-item-checkbox {
+    margin-left: -20px;
+    vertical-align: middle;
+    pointer-events: none;
+}
+</style>
+<style>
+:root {
+  --color-note: #0969da;
+  --color-tip: #1a7f37;
+  --color-warning: #9a6700;
+  --color-severe: #bc4c00;
+  --color-caution: #d1242f;
+  --color-important: #8250df;
+}
+
+</style>
+<style>
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-note: #2f81f7;
+    --color-tip: #3fb950;
+    --color-warning: #d29922;
+    --color-severe: #db6d28;
+    --color-caution: #f85149;
+    --color-important: #a371f7;
+  }
+}
+
+</style>
+<style>
+.markdown-alert {
+  padding: 0.5rem 1rem;
+  margin-bottom: 16px;
+  color: inherit;
+  border-left: .25em solid #888;
+}
+
+.markdown-alert>:first-child {
+  margin-top: 0
+}
+
+.markdown-alert>:last-child {
+  margin-bottom: 0
+}
+
+.markdown-alert .markdown-alert-title {
+  display: flex;
+  font-weight: 500;
+  align-items: center;
+  line-height: 1
+}
+
+.markdown-alert .markdown-alert-title .octicon {
+  margin-right: 0.5rem;
+  display: inline-block;
+  overflow: visible !important;
+  vertical-align: text-bottom;
+  fill: currentColor;
+}
+
+.markdown-alert.markdown-alert-note {
+  border-left-color: var(--color-note);
+}
+
+.markdown-alert.markdown-alert-note .markdown-alert-title {
+  color: var(--color-note);
+}
+
+.markdown-alert.markdown-alert-important {
+  border-left-color: var(--color-important);
+}
+
+.markdown-alert.markdown-alert-important .markdown-alert-title {
+  color: var(--color-important);
+}
+
+.markdown-alert.markdown-alert-warning {
+  border-left-color: var(--color-warning);
+}
+
+.markdown-alert.markdown-alert-warning .markdown-alert-title {
+  color: var(--color-warning);
+}
+
+.markdown-alert.markdown-alert-tip {
+  border-left-color: var(--color-tip);
+}
+
+.markdown-alert.markdown-alert-tip .markdown-alert-title {
+  color: var(--color-tip);
+}
+
+.markdown-alert.markdown-alert-caution {
+  border-left-color: var(--color-caution);
+}
+
+.markdown-alert.markdown-alert-caution .markdown-alert-title {
+  color: var(--color-caution);
+}
+
+</style>
+        
+        </head>
+        <body class="vscode-body vscode-light">
+            <h1 id="portfolio-admin-dashboard">Portfolio Admin Dashboard</h1>
+<p>A modern admin dashboard built with Next.js, shadcn/ui, and Framer Motion for managing portfolio content.</p>
+<h2 id="features">Features</h2>
+<ul>
+<li>🌙 Dark mode support</li>
+<li>📱 Responsive design</li>
+<li>🎨 Modern UI with shadcn/ui components</li>
+<li>🔄 Smooth animations with Framer Motion</li>
+<li>📊 Project management</li>
+<li>🛠️ Skill management</li>
+<li>📄 Resume management</li>
+</ul>
+<h2 id="tech-stack">Tech Stack</h2>
+<ul>
+<li><a href="https://nextjs.org/">Next.js 14</a></li>
+<li><a href="https://reactjs.org/">React</a></li>
+<li><a href="https://www.typescriptlang.org/">TypeScript</a></li>
+<li><a href="https://tailwindcss.com/">Tailwind CSS</a></li>
+<li><a href="https://ui.shadcn.com/">shadcn/ui</a></li>
+<li><a href="https://www.framer.com/motion/">Framer Motion</a></li>
+<li><a href="https://lucide.dev/">Lucide Icons</a></li>
+</ul>
+<h2 id="getting-started">Getting Started</h2>
+<ol>
+<li>Install dependencies:</li>
+</ol>
+<pre><code class="language-bash">npm install
+</code></pre>
+<ol start="2">
+<li>Start the development server:</li>
+</ol>
+<pre><code class="language-bash">npm run dev
+</code></pre>
+<ol start="3">
+<li>Open <a href="http://localhost:3000">http://localhost:3000</a> with your browser to see the result.</li>
+</ol>
+<h2 id="project-structure">Project Structure</h2>
+<pre><code>src/
+├── app/
+│   ├── (dashboard)/
+│   │   ├── dashboard/
+│   │   ├── projects/
+│   │   ├── skills/
+│   │   └── resumes/
+│   └── layout.tsx
+├── components/
+│   ├── ui/
+│   └── sidebar.tsx
+└── lib/
+    └── utils.ts
+</code></pre>
+<h2 id="features-to-be-implemented">Features to be Implemented</h2>
+<ul class="contains-task-list">
+<li class="task-list-item enabled"><input class="task-list-item-checkbox"type="checkbox"> Authentication</li>
+<li class="task-list-item enabled"><input class="task-list-item-checkbox"type="checkbox"> Project CRUD operations</li>
+<li class="task-list-item enabled"><input class="task-list-item-checkbox"type="checkbox"> Skill CRUD operations</li>
+<li class="task-list-item enabled"><input class="task-list-item-checkbox"type="checkbox"> Resume upload and management</li>
+<li class="task-list-item enabled"><input class="task-list-item-checkbox"type="checkbox"> API integration</li>
+<li class="task-list-item enabled"><input class="task-list-item-checkbox"type="checkbox"> Data visualization</li>
+<li class="task-list-item enabled"><input class="task-list-item-checkbox"type="checkbox"> User settings</li>
+<li class="task-list-item enabled"><input class="task-list-item-checkbox"type="checkbox"> Search functionality</li>
+</ul>
+
+            
+            
+        </body>
+        </html>

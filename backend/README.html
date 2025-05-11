@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <title>Portfolio Admin Backend</title>
+            <style>
+/* From extension vscode.github */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.vscode-dark img[src$=\#gh-light-mode-only],
+.vscode-light img[src$=\#gh-dark-mode-only],
+.vscode-high-contrast:not(.vscode-high-contrast-light) img[src$=\#gh-light-mode-only],
+.vscode-high-contrast-light img[src$=\#gh-dark-mode-only] {
+	display: none;
+}
+
+/* From extension bierner.markdown-checkbox */
+.contains-task-list {
+    padding-left: 0;
+}
+
+.contains-task-list li {
+    margin-left: 24px;
+}
+
+.contains-task-list .task-list-item {
+    list-style: none;
+    padding-left: 0;
+    margin-left: 0;
+}
+
+.contains-task-list .contains-task-list {
+    padding-left: 20px;
+} 
+</style>
+            
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/markdown.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/highlight.css">
+<style>
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe WPC', 'Segoe UI', system-ui, 'Ubuntu', 'Droid Sans', sans-serif;
+                font-size: 14px;
+                line-height: 1.6;
+            }
+        </style>
+        <style>
+.task-list-item {
+    list-style-type: none;
+}
+
+.task-list-item-checkbox {
+    margin-left: -20px;
+    vertical-align: middle;
+    pointer-events: none;
+}
+</style>
+<style>
+:root {
+  --color-note: #0969da;
+  --color-tip: #1a7f37;
+  --color-warning: #9a6700;
+  --color-severe: #bc4c00;
+  --color-caution: #d1242f;
+  --color-important: #8250df;
+}
+
+</style>
+<style>
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-note: #2f81f7;
+    --color-tip: #3fb950;
+    --color-warning: #d29922;
+    --color-severe: #db6d28;
+    --color-caution: #f85149;
+    --color-important: #a371f7;
+  }
+}
+
+</style>
+<style>
+.markdown-alert {
+  padding: 0.5rem 1rem;
+  margin-bottom: 16px;
+  color: inherit;
+  border-left: .25em solid #888;
+}
+
+.markdown-alert>:first-child {
+  margin-top: 0
+}
+
+.markdown-alert>:last-child {
+  margin-bottom: 0
+}
+
+.markdown-alert .markdown-alert-title {
+  display: flex;
+  font-weight: 500;
+  align-items: center;
+  line-height: 1
+}
+
+.markdown-alert .markdown-alert-title .octicon {
+  margin-right: 0.5rem;
+  display: inline-block;
+  overflow: visible !important;
+  vertical-align: text-bottom;
+  fill: currentColor;
+}
+
+.markdown-alert.markdown-alert-note {
+  border-left-color: var(--color-note);
+}
+
+.markdown-alert.markdown-alert-note .markdown-alert-title {
+  color: var(--color-note);
+}
+
+.markdown-alert.markdown-alert-important {
+  border-left-color: var(--color-important);
+}
+
+.markdown-alert.markdown-alert-important .markdown-alert-title {
+  color: var(--color-important);
+}
+
+.markdown-alert.markdown-alert-warning {
+  border-left-color: var(--color-warning);
+}
+
+.markdown-alert.markdown-alert-warning .markdown-alert-title {
+  color: var(--color-warning);
+}
+
+.markdown-alert.markdown-alert-tip {
+  border-left-color: var(--color-tip);
+}
+
+.markdown-alert.markdown-alert-tip .markdown-alert-title {
+  color: var(--color-tip);
+}
+
+.markdown-alert.markdown-alert-caution {
+  border-left-color: var(--color-caution);
+}
+
+.markdown-alert.markdown-alert-caution .markdown-alert-title {
+  color: var(--color-caution);
+}
+
+</style>
+        
+        </head>
+        <body class="vscode-body vscode-light">
+            <h1 id="portfolio-admin-backend">Portfolio Admin Backend</h1>
+<p>A RESTful API built with Express.js, TypeScript, and PostgreSQL for managing a portfolio website's content.</p>
+<h2 id="features">Features</h2>
+<ul>
+<li>🔐 JWT Authentication</li>
+<li>📝 Project Management</li>
+<li>🛠️ Skill Management</li>
+<li>📄 Resume Management</li>
+<li>📚 API Documentation with Swagger</li>
+<li>🐳 Docker Support</li>
+<li>🗄️ PostgreSQL Database with Prisma ORM</li>
+</ul>
+<h2 id="prerequisites">Prerequisites</h2>
+<ul>
+<li>Node.js (v18 or higher)</li>
+<li>Docker and Docker Compose</li>
+<li>PostgreSQL (if running locally)</li>
+</ul>
+<h2 id="setup">Setup</h2>
+<ol>
+<li>Clone the repository:</li>
+</ol>
+<pre><code class="language-bash">git <span class="hljs-built_in">clone</span> &lt;repository-url&gt;
+<span class="hljs-built_in">cd</span> portfolio-admin/backend
+</code></pre>
+<ol start="2">
+<li>Install dependencies:</li>
+</ol>
+<pre><code class="language-bash">yarn install
+</code></pre>
+<ol start="3">
+<li>Create a <code>.env</code> file in the root directory:</li>
+</ol>
+<pre><code class="language-env">PORT=3000
+DATABASE_URL=&quot;postgresql://postgres:postgres@localhost:5432/portfolio_admin&quot;
+JWT_SECRET=&quot;your-secret-key&quot;
+</code></pre>
+<ol start="4">
+<li>Set up the database:</li>
+</ol>
+<pre><code class="language-bash">yarn prisma:generate
+yarn prisma:migrate
+</code></pre>
+<h2 id="development">Development</h2>
+<p>Start the development server:</p>
+<pre><code class="language-bash">yarn dev
+</code></pre>
+<p>The server will start on port 3000 (or the port specified in your .env file).</p>
+<h2 id="api-documentation">API Documentation</h2>
+<p>Access the Swagger documentation at <code>http://localhost:3000/docs</code></p>
+<h3 id="authentication">Authentication</h3>
+<p>All endpoints except authentication endpoints require a JWT token in the Authorization header:</p>
+<pre><code>Authorization: Bearer &lt;your-token&gt;
+</code></pre>
+<h4 id="auth-endpoints">Auth Endpoints</h4>
+<ul>
+<li>
+<p><code>POST /api/auth/signup</code></p>
+<ul>
+<li>Register a new user</li>
+<li>Body: <code>{ &quot;email&quot;: string, &quot;password&quot;: string, &quot;name&quot;: string }</code></li>
+</ul>
+</li>
+<li>
+<p><code>POST /api/auth/login</code></p>
+<ul>
+<li>Login user</li>
+<li>Body: <code>{ &quot;email&quot;: string, &quot;password&quot;: string }</code></li>
+</ul>
+</li>
+<li>
+<p><code>GET /api/auth/me</code></p>
+<ul>
+<li>Get current user information</li>
+<li>Requires authentication</li>
+<li>Response: <code>{ &quot;id&quot;: string, &quot;email&quot;: string, &quot;name&quot;: string, &quot;createdAt&quot;: string, &quot;updatedAt&quot;: string }</code></li>
+</ul>
+</li>
+</ul>
+<h3 id="projects">Projects</h3>
+<ul>
+<li>
+<p><code>GET /api/projects</code></p>
+<ul>
+<li>Get all projects</li>
+<li>Query params: <code>page</code>, <code>limit</code></li>
+</ul>
+</li>
+<li>
+<p><code>GET /api/projects/:id</code></p>
+<ul>
+<li>Get project by ID</li>
+</ul>
+</li>
+<li>
+<p><code>POST /api/projects</code></p>
+<ul>
+<li>Create new project</li>
+<li>Body: <code>{ &quot;name&quot;: string, &quot;description&quot;: string, &quot;websiteLink&quot;: string, &quot;githubLink&quot;: string }</code></li>
+</ul>
+</li>
+<li>
+<p><code>PUT /api/projects/:id</code></p>
+<ul>
+<li>Update project</li>
+<li>Body: <code>{ &quot;name&quot;: string, &quot;description&quot;: string, &quot;websiteLink&quot;: string, &quot;githubLink&quot;: string }</code></li>
+</ul>
+</li>
+<li>
+<p><code>DELETE /api/projects/:id</code></p>
+<ul>
+<li>Delete project</li>
+</ul>
+</li>
+</ul>
+<h3 id="skills">Skills</h3>
+<ul>
+<li>
+<p><code>GET /api/skills</code></p>
+<ul>
+<li>Get all skills</li>
+<li>Query params: <code>page</code>, <code>limit</code></li>
+</ul>
+</li>
+<li>
+<p><code>GET /api/skills/:id</code></p>
+<ul>
+<li>Get skill by ID</li>
+</ul>
+</li>
+<li>
+<p><code>POST /api/skills</code></p>
+<ul>
+<li>Create new skill</li>
+<li>Body: <code>{ &quot;name&quot;: string, &quot;type&quot;: &quot;backend&quot; | &quot;frontend&quot; | &quot;database&quot; | &quot;other&quot;, &quot;imageUrl&quot;: string, &quot;docsLink&quot;: string }</code></li>
+</ul>
+</li>
+<li>
+<p><code>PUT /api/skills/:id</code></p>
+<ul>
+<li>Update skill</li>
+<li>Body: <code>{ &quot;name&quot;: string, &quot;type&quot;: string, &quot;imageUrl&quot;: string, &quot;docsLink&quot;: string }</code></li>
+</ul>
+</li>
+<li>
+<p><code>DELETE /api/skills/:id</code></p>
+<ul>
+<li>Delete skill</li>
+</ul>
+</li>
+</ul>
+<h3 id="resumes">Resumes</h3>
+<ul>
+<li>
+<p><code>GET /api/resumes</code></p>
+<ul>
+<li>Get all resumes</li>
+<li>Query params: <code>page</code>, <code>limit</code></li>
+</ul>
+</li>
+<li>
+<p><code>GET /api/resumes/:id</code></p>
+<ul>
+<li>Get resume by ID</li>
+</ul>
+</li>
+<li>
+<p><code>POST /api/resumes</code></p>
+<ul>
+<li>Upload new resume</li>
+<li>Form data: <code>resume</code> (PDF file)</li>
+</ul>
+</li>
+<li>
+<p><code>DELETE /api/resumes/:id</code></p>
+<ul>
+<li>Delete resume</li>
+</ul>
+</li>
+</ul>
+<h2 id="docker">Docker</h2>
+<p>Build and run with Docker Compose:</p>
+<pre><code class="language-bash">docker-compose up --build
+</code></pre>
+<p>Stop the application:</p>
+<pre><code class="language-bash">docker-compose down
+</code></pre>
+<h2 id="database">Database</h2>
+<p>The application uses PostgreSQL with Prisma ORM. The database schema includes:</p>
+<ul>
+<li>Users</li>
+<li>Projects</li>
+<li>Skills</li>
+<li>Resumes</li>
+</ul>
+<p>To view and manage the database:</p>
+<pre><code class="language-bash">yarn prisma:studio
+</code></pre>
+<h2 id="scripts">Scripts</h2>
+<ul>
+<li><code>yarn dev</code>: Start development server</li>
+<li><code>yarn build</code>: Build for production</li>
+<li><code>yarn start</code>: Start production server</li>
+<li><code>yarn prisma:generate</code>: Generate Prisma client</li>
+<li><code>yarn prisma:migrate</code>: Run database migrations</li>
+<li><code>yarn prisma:studio</code>: Open Prisma Studio</li>
+</ul>
+<h2 id="error-handling">Error Handling</h2>
+<p>The API uses standard HTTP status codes:</p>
+<ul>
+<li>200: Success</li>
+<li>201: Created</li>
+<li>400: Bad Request</li>
+<li>401: Unauthorized</li>
+<li>403: Forbidden</li>
+<li>404: Not Found</li>
+<li>500: Internal Server Error</li>
+</ul>
+<h2 id="file-upload">File Upload</h2>
+<p>Resume files are stored in the <code>uploads</code> directory and served statically at <code>/uploads</code>.</p>
+<h2 id="contributing">Contributing</h2>
+<ol>
+<li>Fork the repository</li>
+<li>Create your feature branch</li>
+<li>Commit your changes</li>
+<li>Push to the branch</li>
+<li>Create a Pull Request</li>
+</ol>
+
+            
+            
+        </body>
+        </html>
