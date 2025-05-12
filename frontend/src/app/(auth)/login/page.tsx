@@ -23,7 +23,10 @@ export default function LoginPage() {
     try {
       await login(email, password);
       router.push("/dashboard");
-    } catch {
+    } catch (error) {
+      // Error is already handled by the login function with toast
+      console.error("Login error:", error);
+    } finally {
       setIsLoading(false);
     }
   }

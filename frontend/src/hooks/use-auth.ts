@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { api } from '@/lib/api';
+import { api, authApi } from '@/lib/api';
 import { LoginResponse } from '@/types/api';
 import { toast } from 'sonner';
 import { AxiosError } from 'axios';
@@ -18,7 +18,7 @@ export const useAuth = create<AuthState>((set) => ({
 
   login: async (email: string, password: string) => {
     try {
-      const { data } = await api.post<LoginResponse>('/auth/login', {
+      const { data } = await authApi.post<LoginResponse>('/auth/login', {
         email,
         password,
       });
@@ -34,7 +34,7 @@ export const useAuth = create<AuthState>((set) => ({
 
   logout: async () => {
     try {
-      await api.post('/auth/logout');
+      await authApi.post('/auth/logout');
     } catch (error) {
       console.error('Logout error:', error);
     } finally {
