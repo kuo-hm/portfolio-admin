@@ -148,4 +148,38 @@ router.get('/me', authenticateToken, async (req: Request, res: Response) => {
   await authController.getCurrentUser(req, res);
 });
 
+/**
+ * @swagger
+ * /api/auth/refresh:
+ *   post:
+ *     summary: Refresh access token
+ *     tags: [Auth]
+ *     responses:
+ *       200:
+ *         description: Token refreshed successfully
+ *       401:
+ *         description: Invalid or missing refresh token
+ */
+router.post('/refresh', async (req: Request, res: Response) => {
+  await authController.refresh(req, res);
+});
+
+/**
+ * @swagger
+ * /api/auth/logout:
+ *   post:
+ *     summary: Logout user
+ *     tags: [Auth]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Logged out successfully
+ *       500:
+ *         description: Internal server error
+ */
+router.post('/logout', authenticateToken, async (req: Request, res: Response) => {
+  await authController.logout(req, res);
+});
+
 export default router; 

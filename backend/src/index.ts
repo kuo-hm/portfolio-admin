@@ -4,6 +4,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import path from 'path';
 import fs from 'fs';
+import cookieParser from 'cookie-parser';
 import routes from './routes';
 import swaggerUi from 'swagger-ui-express';
 import swaggerJSDoc from 'swagger-jsdoc';
@@ -74,8 +75,9 @@ if (!fs.existsSync(uploadsDir)) {
 }
 
 
-app.use(cors(corsOptions));
 app.use(express.json());
+app.use(cookieParser());
+app.use(cors(corsOptions));
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 
