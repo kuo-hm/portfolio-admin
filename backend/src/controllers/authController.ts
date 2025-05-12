@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { PrismaClient } from '@prisma/client';
-import bcrypt from 'bcryptjs';
+import * as argon2 from 'argon2';
 import jwt from 'jsonwebtoken';
 import { SignupDto, LoginDto } from '../dto/auth.dto';
 
@@ -35,7 +35,12 @@ export const authController = {
         return res.status(400).json({ message: 'User already exists' });
       }
 
-      const hashedPassword = await bcrypt.hash(password, 10);
+      const hashedPassword = await argon2.hash(password, {
+        type: argon2.argon2id,
+        memoryCost: 2 ** 16, // 64MB
+        timeCost: 3,
+        parallelism: 1
+      });
 
       const user = await prisma.user.create({
         data: {
@@ -90,16 +95,12 @@ export const authController = {
         where: { email }
       });
 
-      console.log(user, "user");
-      console.log(password, "password");
-      console.log(email, "email");
       if (!user) {
         return res.status(401).json({ message: 'Invalid credentials' });
       }
 
-      const isValidPassword = await bcrypt.compare(password, user.password);
+      const isValidPassword = await argon2.verify(user.password, password);
 
-      console.log(isValidPassword, "isValidPassword");
       if (!isValidPassword) {
         return res.status(401).json({ message: 'Invalid credentials' });
       }

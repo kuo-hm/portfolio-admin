@@ -47,7 +47,7 @@ const swaggerOptions = {
     },
     servers: [
       {
-        url: `http://localhost:${port}`,
+        url: `http://185.197.251.224:8002`,
       },
     ],
     components: {
