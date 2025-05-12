@@ -12,8 +12,12 @@ import {
   FileText,
   LogOut,
   User,
+  Menu,
 } from "lucide-react";
 import { Button } from "./ui/button";
+import { useState } from "react";
+import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
+import { ThemeSwitch } from "./theme-switch";
 
 const navigation = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
@@ -25,9 +29,10 @@ const navigation = [
 export function Sidebar() {
   const pathname = usePathname();
   const { user, logout } = useAuth();
+  const [isOpen, setIsOpen] = useState(false);
 
-  return (
-    <div className="flex h-full w-64 flex-col border-r bg-card">
+  const SidebarContent = () => (
+    <>
       <div className="flex h-14 items-center gap-4 border-b px-4">
         <h2 className="text-lg font-semibold">Portfolio Admin</h2>
       </div>
@@ -53,6 +58,7 @@ export function Sidebar() {
             <Link
               key={item.name}
               href={item.href}
+              onClick={() => setIsOpen(false)}
               className={cn(
                 "group flex items-center rounded-md px-2 py-2 text-sm font-medium hover:bg-accent",
                 isActive
@@ -78,7 +84,8 @@ export function Sidebar() {
         })}
       </nav>
 
-      <div className="border-t p-2">
+      <div className="border-t p-2 space-y-1">
+        <ThemeSwitch />
         <Button
           variant="ghost"
           className="w-full justify-start"
@@ -88,6 +95,27 @@ export function Sidebar() {
           Logout
         </Button>
       </div>
-    </div>
+    </>
+  );
+
+  return (
+    <>
+      {/* Mobile Sidebar */}
+      <Sheet open={isOpen} onOpenChange={setIsOpen}>
+        <SheetTrigger asChild className="lg:hidden fixed top-4 left-4 z-50">
+          <Button variant="outline" size="icon">
+            <Menu className="h-5 w-5" />
+          </Button>
+        </SheetTrigger>
+        <SheetContent side="left" className="w-64 p-0 h-full">
+          <SidebarContent />
+        </SheetContent>
+      </Sheet>
+
+      {/* Desktop Sidebar */}
+      <div className="hidden lg:flex h-screen w-64 flex-col border-r bg-card sticky top-0">
+        <SidebarContent />
+      </div>
+    </>
   );
 }

@@ -37,6 +37,8 @@ model Resume {
   id        String   @id @default(uuid())
   fileName  String
   filePath  String
+  language  Language   @default(en)
+  isPublic  Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -61,4 +63,16 @@ enum SkillType {
 enum Role {
   USER
   ADMIN
+}
+
+enum Language {
+  en
+  ar
+  fr
+  es
+  de
+  it
+  ja
+  zh
+  hi
 }

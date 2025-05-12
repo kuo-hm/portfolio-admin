@@ -31,7 +31,7 @@ export function ProjectCard({
     : null;
 
   return (
-    <Card className="overflow-hidden">
+    <Card className="overflow-hidden h-full flex flex-col">
       <div className="relative aspect-video w-full">
         {imageUrl ? (
           <Image
@@ -39,7 +39,7 @@ export function ProjectCard({
             alt={project.name}
             fill
             className="object-cover"
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 25vw"
+            sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
           />
         ) : (
           <div className="absolute inset-0 bg-muted flex items-center justify-center">
@@ -64,7 +64,7 @@ export function ProjectCard({
         </Button>
       </div>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 p-4">
-        <CardTitle className="text-base">{project.name}</CardTitle>
+        <CardTitle className="text-base line-clamp-1">{project.name}</CardTitle>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="icon" className="h-8 w-8">
@@ -85,12 +85,17 @@ export function ProjectCard({
           </DropdownMenuContent>
         </DropdownMenu>
       </CardHeader>
-      <CardContent className="p-4 pt-0">
-        <p className="text-sm text-muted-foreground line-clamp-2 mb-3">
+      <CardContent className="p-4 pt-0 flex-1 flex flex-col">
+        <p className="text-sm text-muted-foreground line-clamp-2 mb-3 flex-1">
           {project.description}
         </p>
-        <div className="flex gap-2">
-          <Button variant="outline" size="sm" className="h-8 text-xs" asChild>
+        <div className="flex flex-wrap gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-8 text-xs flex-1 sm:flex-none"
+            asChild
+          >
             <a
               href={project.websiteLink}
               target="_blank"
@@ -99,7 +104,12 @@ export function ProjectCard({
               Visit Site
             </a>
           </Button>
-          <Button variant="outline" size="sm" className="h-8 text-xs" asChild>
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-8 text-xs flex-1 sm:flex-none"
+            asChild
+          >
             <a
               href={project.githubLink}
               target="_blank"

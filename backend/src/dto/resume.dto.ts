@@ -1,7 +1,13 @@
-import { IsString, Length } from 'class-validator';
+import { Language } from '@prisma/client';
+import { IsString, Length, IsBoolean, IsOptional, IsEnum } from 'class-validator';
 
 export class UploadResumeDto {
+
   @IsString()
-  @Length(1, 255)
-  fileName!: string;
+  @IsEnum(Language)
+  language!: Language;
+
+  @IsBoolean()
+  @IsOptional()
+  isPublic: boolean = false;
 } 

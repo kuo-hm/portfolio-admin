@@ -1,5 +1,6 @@
 import { IsString, IsEnum, IsOptional, IsUrl, IsBoolean } from 'class-validator';
 import { SkillType } from '@prisma/client';
+import { Transform } from 'class-transformer';
 
 export class CreateSkillDto {
   @IsString()
@@ -28,10 +29,10 @@ export class CreateSkillDto {
   })
   @IsOptional()
   docsLink?: string;
-
   @IsBoolean()
   @IsOptional()
-  isPublic?: boolean = false;
+  @Transform(({ value }) => value === 'true')
+  isPublic: boolean = false;
 }
 
 export class UpdateSkillDto {

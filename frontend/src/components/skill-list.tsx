@@ -1,24 +1,22 @@
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Project } from "@/lib/validations/project";
-import { ProjectCard } from "./project-card";
+import { Skill } from "@/lib/validations/skill";
+import { SkillCard } from "./skill-card";
 
-interface ProjectListProps {
-  projects: Project[];
+interface SkillListProps {
+  skills: Skill[];
   isLoading: boolean;
   error: unknown;
-  onEdit: (project: Project) => void;
-  onDelete: (project: Project) => void;
-  onPublishChange: (project: Project, isPublic: boolean) => void;
+  onEdit: (skill: Skill) => void;
+  onDelete: (skill: Skill) => void;
 }
 
-export function ProjectList({
-  projects,
+export function SkillList({
+  skills,
   isLoading,
   error,
   onEdit,
   onDelete,
-  onPublishChange,
-}: ProjectListProps) {
+}: SkillListProps) {
   if (isLoading) {
     return (
       <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
@@ -39,31 +37,16 @@ export function ProjectList({
   if (error) {
     return (
       <div className="rounded-md border border-destructive p-4">
-        <p className="text-sm text-destructive">
-          Failed to load projects:{" "}
-          {error instanceof Error ? error.message : "Unknown error"}
-        </p>
+        <p className="text-sm text-destructive">Failed to load skills</p>
       </div>
     );
   }
 
-  if (!projects) {
+  if (!skills.length) {
     return (
       <div className="rounded-md border">
         <div className="p-4">
-          <p className="text-sm text-muted-foreground">No projects found.</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (projects.length === 0) {
-    return (
-      <div className="rounded-md border">
-        <div className="p-4">
-          <p className="text-sm text-muted-foreground">
-            No projects yet. Add your first project!
-          </p>
+          <p className="text-sm text-muted-foreground">No skills found.</p>
         </div>
       </div>
     );
@@ -71,13 +54,12 @@ export function ProjectList({
 
   return (
     <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-      {projects.map((project) => (
-        <ProjectCard
-          key={project.id}
-          project={project}
+      {skills.map((skill) => (
+        <SkillCard
+          key={skill.id}
+          skill={skill}
           onEdit={onEdit}
           onDelete={onDelete}
-          onPublishChange={onPublishChange}
         />
       ))}
     </div>

@@ -1,14 +1,15 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/lib/api';
-import { Resume, PaginatedResponse, ErrorResponse } from '@/types/api';
+import { Resume, ErrorResponse } from '@/types/api';
 import { toast } from 'sonner';
 import { AxiosError } from 'axios';
+import { ResumeResponse } from "@/lib/validations/resume";
 
-export function useResumes(page = 1, limit = 10) {
-  return useQuery<PaginatedResponse<Resume>>({
-    queryKey: ['resumes', page, limit],
+export function useResumes() {
+  return useQuery<ResumeResponse>({
+    queryKey: ["resumes"],
     queryFn: async () => {
-      const { data } = await api.get(`/resumes?page=${page}&limit=${limit}`);
+      const { data } = await api.get("/resumes");
       return data;
     },
   });
@@ -63,6 +64,28 @@ export function useDeleteResume() {
     },
     onError: (error: AxiosError<ErrorResponse>) => {
       toast.error(error.response?.data?.message || 'Failed to delete resume');
+    },
+  });
+}
+
+export function useUpdateResume() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ id, data }: { id: string; data: FormData }) => {
+      const { data: response } = await api.patch(`/resumes/${id}`, data, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      return response;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['resumes'] });
+      toast.success('Resume updated successfully');
+    },
+    onError: (error: AxiosError<ErrorResponse>) => {
+      toast.error(error.response?.data?.message || 'Failed to update resume');
     },
   });
 } 

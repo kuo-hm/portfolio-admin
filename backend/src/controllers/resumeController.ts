@@ -1,8 +1,9 @@
 import { Request, Response } from 'express';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Language } from '@prisma/client';
 import path from 'path';
 import fs from 'fs';
 import { PaginationDto, PaginatedResponse } from '../dto/pagination.dto';
+import { UploadResumeDto } from '../dto/resume.dto';
 import { plainToInstance } from 'class-transformer';
 import { validate } from 'class-validator';
 
@@ -22,13 +23,25 @@ export const resumeController = {
       const { page = 1, limit = 10 } = paginationDto;
       const skip = (page - 1) * limit;
 
+      // Get filter parameters
+      const language = req.query.language as Language | undefined;
+      const isPublic = req.query.isPublic === 'true' ? true : 
+                      req.query.isPublic === 'false' ? false : undefined;
+
+      // Build where clause
+      const where = {
+        ...(language && { language }),
+        ...(isPublic !== undefined && { isPublic })
+      };
+
       const [resumes, total] = await Promise.all([
         prisma.resume.findMany({
+          where,
           skip,
           take: limit,
           orderBy: { createdAt: 'desc' },
         }),
-        prisma.resume.count(),
+        prisma.resume.count({ where })
       ]);
 
       const response: PaginatedResponse<typeof resumes[0]> = {
@@ -74,10 +87,47 @@ export const resumeController = {
         return res.status(400).json({ message: 'No file uploaded' });
       }
 
+      if (!req.user?.userId) {
+        return res.status(401).json({ message: 'User not authenticated' });
+      }
+
+      const user = await prisma.user.findUnique({
+        where: { id: req.user.userId },
+        select: { name: true }
+      });
+
+      if (!user?.name) {
+        return res.status(400).json({ message: 'User name not found' });
+      }
+
+      const resumeData = plainToInstance(UploadResumeDto, {
+        fileName: req.file.originalname,
+        language: req.body.language || 'en',
+        isPublic: req.body.isPublic === 'true'
+      });
+
+      const errors = await validate(resumeData);
+      if (errors.length > 0) {
+        return res.status(400).json({ errors });
+      }
+
+      const fileName = `${user.name.toLowerCase().replace(/\s+/g, '_')}_${resumeData.language}_${new Date().toISOString().split('T')[0]}.pdf`;
+      const savedFileName = `${user.name} ${resumeData.language}`;
+      const relativePath = path.join('uploads', 'resumes', fileName);
+      const absolutePath = path.join(__dirname, '../../', relativePath);
+
+      // Create directory if it doesn't exist
+      await fs.promises.mkdir(path.dirname(absolutePath), { recursive: true });
+      
+      // Move file from temp to final location
+      await fs.promises.rename(req.file.path, absolutePath);
+
       const resume = await prisma.resume.create({
         data: {
-          fileName: req.file.originalname,
-          filePath: req.file.path
+          fileName:savedFileName,
+          filePath: `/${relativePath}`,
+          language: resumeData.language,
+          isPublic: resumeData.isPublic
         }
       });
 

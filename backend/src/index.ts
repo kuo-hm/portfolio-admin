@@ -11,6 +11,8 @@ import projectRoutes from './routes/projectRoutes';
 import skillRoutes from './routes/skillRoutes';
 import resumeRoutes from './routes/resumeRoutes';
 import authRoutes from './routes/authRoutes';
+import dashboardRoutes from './routes/dashboardRoutes';
+import publicRoutes from './routes/publicRoutes';
 
 
 dotenv.config();
@@ -94,6 +96,8 @@ app.use('/api/projects', projectRoutes);
 app.use('/api/skills', skillRoutes);
 app.use('/api/resumes', resumeRoutes);
 app.use('/api/auth', authRoutes);
+app.use('/api/dashboard', dashboardRoutes);
+app.use('/public', publicRoutes);
 
 
 app.get('/health', (req, res) => {

@@ -1,14 +1,15 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/lib/api';
-import { Skill, PaginatedResponse, ErrorResponse } from '@/types/api';
+import { Skill,  ErrorResponse } from '@/types/api';
 import { toast } from 'sonner';
 import { AxiosError } from 'axios';
+import { type SkillsResponse } from "@/lib/validations/skill";
 
-export function useSkills(page = 1, limit = 10) {
-  return useQuery<PaginatedResponse<Skill>>({
-    queryKey: ['skills', page, limit],
+export function useSkills() {
+  return useQuery<SkillsResponse>({
+    queryKey: ["skills"],
     queryFn: async () => {
-      const { data } = await api.get(`/skills?page=${page}&limit=${limit}`);
+      const { data } = await api.get("/skills");
       return data;
     },
   });
@@ -29,16 +30,24 @@ export function useCreateSkill() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (skill: Omit<Skill, 'id' | 'createdAt' | 'updatedAt'>) => {
-      const { data } = await api.post('/skills', skill);
+    mutationFn: async (formData: FormData) => {
+      const isPublic = formData.get("isPublic") === "true";
+      formData.set("isPublic", String(isPublic));
+
+      const { data } = await api.post("/skills", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
       return data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['skills'] });
-      toast.success('Skill created successfully');
+      queryClient.invalidateQueries({ queryKey: ["skills"] });
+      toast.success("Skill created successfully");
     },
     onError: (error: AxiosError<ErrorResponse>) => {
-      toast.error(error.response?.data?.message || 'Failed to create skill');
+      console.error("Error creating skill:", error);
+      toast.error(error.response?.data?.message || "Failed to create skill");
     },
   });
 }
