@@ -90,12 +90,16 @@ export const authController = {
         where: { email }
       });
 
+      console.log(user, "user");
+      console.log(password, "password");
+      console.log(email, "email");
       if (!user) {
         return res.status(401).json({ message: 'Invalid credentials' });
       }
 
       const isValidPassword = await bcrypt.compare(password, user.password);
 
+      console.log(isValidPassword, "isValidPassword");
       if (!isValidPassword) {
         return res.status(401).json({ message: 'Invalid credentials' });
       }
