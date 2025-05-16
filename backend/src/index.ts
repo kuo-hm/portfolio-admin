@@ -99,7 +99,7 @@ app.use('/api/skills', skillRoutes);
 app.use('/api/resumes', resumeRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/dashboard', dashboardRoutes);
-app.use('/public', publicRoutes);
+app.use('/api/public', publicRoutes);
 
 
 app.get('/health', (req, res) => {
