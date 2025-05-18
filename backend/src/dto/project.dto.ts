@@ -1,3 +1,4 @@
+import { Transform } from 'class-transformer';
 import { IsString, IsOptional, IsUrl, Length, IsBoolean } from 'class-validator';
 
 export class CreateProjectDto {
@@ -49,6 +50,7 @@ export class CreateProjectDto {
 
   @IsBoolean()
   @IsOptional()
+  @Transform(({ value }) => value === true || value === 'true')
   isPublic?: boolean = false;
 }
 
@@ -101,5 +103,6 @@ export class UpdateProjectDto {
 
   @IsBoolean()
   @IsOptional()
+  @Transform(({ value }) => value === true || value === 'true')
   isPublic?: boolean;
 } 

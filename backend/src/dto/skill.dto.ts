@@ -9,9 +9,13 @@ export class CreateSkillDto {
   @IsEnum(SkillType)
   type!: SkillType;
 
-  @IsString()
   @IsOptional()
-  imageUrl?: string;
+  @IsString()
+  lightImageUrl?: string;
+
+  @IsOptional()
+  @IsString()
+  darkImageUrl?: string;
 
   @IsUrl({
     protocols: ['http', 'https'],
@@ -29,9 +33,10 @@ export class CreateSkillDto {
   })
   @IsOptional()
   docsLink?: string;
+
   @IsBoolean()
   @IsOptional()
-  @Transform(({ value }) => value === 'true')
+  @Transform(({ value }) => value === true || value === 'true')
   isPublic: boolean = false;
 }
 
@@ -46,7 +51,11 @@ export class UpdateSkillDto {
 
   @IsString()
   @IsOptional()
-  imageUrl?: string;
+  lightImageUrl?: string;
+
+  @IsString()
+  @IsOptional()
+  darkImageUrl?: string;
 
   @IsUrl({
     protocols: ['http', 'https'],
@@ -67,5 +76,6 @@ export class UpdateSkillDto {
 
   @IsBoolean()
   @IsOptional()
+  @Transform(({ value }) => value === true || value === 'true')
   isPublic?: boolean;
 } 

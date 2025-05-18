@@ -10,6 +10,29 @@ import fs from 'fs';
 
 const prisma = new PrismaClient();
 
+const processImage = async (file: Express.Multer.File, mode: 'light' | 'dark'): Promise<string> => {
+  const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+  const filename = `skill-${mode}-${uniqueSuffix}${path.extname(file.originalname)}`;
+  const relativePath = path.join('uploads', 'skills', filename);
+  const absolutePath = path.join(__dirname, '../../', relativePath);
+
+  await fs.promises.mkdir(path.dirname(absolutePath), { recursive: true });
+  await fs.promises.rename(file.path, absolutePath);
+  
+  return `/${relativePath}`;
+};
+
+const deleteImage = async (imagePath: string | null) => {
+  if (imagePath) {
+    try {
+      const absolutePath = path.join(__dirname, '../../', imagePath);
+      await fs.promises.unlink(absolutePath);
+    } catch (error) {
+      console.error('Error deleting image:', error);
+    }
+  }
+};
+
 export const skillController = {
   
   async getAllSkills(req: Request, res: Response) {
@@ -79,27 +102,24 @@ export const skillController = {
         return res.status(400).json({ errors });
       }
 
-      let imageUrl: string | undefined;
+      const files = req.files as { [fieldname: string]: Express.Multer.File[] };
       
-      if (req.file) {
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-        const filename = `skill-${uniqueSuffix}${path.extname(req.file.originalname)}`;
-        const relativePath = path.join('uploads', 'skills', filename);
-        const absolutePath = path.join(__dirname, '../../', relativePath);
+      let lightImageUrl: string | undefined;
+      let darkImageUrl: string | undefined;
 
-        
-        await fs.promises.mkdir(path.dirname(absolutePath), { recursive: true });
-        
-        
-        await fs.promises.rename(req.file.path, absolutePath);
-        
-        imageUrl = `/${relativePath}`;
+      if (files.lightImage?.[0]) {
+        lightImageUrl = await processImage(files.lightImage[0], 'light');
+      }
+
+      if (files.darkImage?.[0]) {
+        darkImageUrl = await processImage(files.darkImage[0], 'dark');
       }
 
       const skill = await prisma.skill.create({
         data: {
           ...skillData,
-          imageUrl
+          lightImageUrl,
+          darkImageUrl
         }
       });
 
@@ -121,44 +141,33 @@ export const skillController = {
         return res.status(400).json({ errors });
       }
 
-      let imageUrl: string | undefined;
+      const files = req.files as { [fieldname: string]: Express.Multer.File[] };
       
-      if (req.file) {
-        
-        const existingSkill = await prisma.skill.findUnique({
-          where: { id },
-          select: { imageUrl: true }
-        });
+      const existingSkill = await prisma.skill.findUnique({
+        where: { id },
+        select: { lightImageUrl: true, darkImageUrl: true }
+      });
 
-        if (existingSkill?.imageUrl) {
-          const oldImagePath = path.join(__dirname, '../../', existingSkill.imageUrl);
-          try {
-            await fs.promises.unlink(oldImagePath);
-          } catch (error) {
-            console.error('Error deleting old image:', error);
-          }
-        }
+      let lightImageUrl: string | undefined;
+      let darkImageUrl: string | undefined;
 
-        
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-        const filename = `skill-${uniqueSuffix}${path.extname(req.file.originalname)}`;
-        const relativePath = path.join('uploads', 'skills', filename);
-        const absolutePath = path.join(__dirname, '../../', relativePath);
+      console.log(files);
+      if (files?.lightImage?.[0]) {
+        await deleteImage(existingSkill?.lightImageUrl || null);
+        lightImageUrl = await processImage(files.lightImage[0], 'light');
+      }
 
-        
-        await fs.promises.mkdir(path.dirname(absolutePath), { recursive: true });
-        
-        
-        await fs.promises.rename(req.file.path, absolutePath);
-        
-        imageUrl = `/${relativePath}`;
+      if (files?.darkImage?.[0]) {
+        await deleteImage(existingSkill?.darkImageUrl || null);
+        darkImageUrl = await processImage(files.darkImage[0], 'dark');
       }
 
       const skill = await prisma.skill.update({
         where: { id },
         data: {
           ...skillData,
-          ...(imageUrl && { imageUrl })
+          ...(lightImageUrl && { lightImageUrl }),
+          ...(darkImageUrl && { darkImageUrl })
         }
       });
 
@@ -177,20 +186,13 @@ export const skillController = {
     try {
       const { id } = req.params;
       
-      
       const skill = await prisma.skill.findUnique({
         where: { id },
-        select: { imageUrl: true }
+        select: { lightImageUrl: true, darkImageUrl: true }
       });
 
-      if (skill?.imageUrl) {
-        const imagePath = path.join(__dirname, '../../', skill.imageUrl);
-        try {
-          await fs.promises.unlink(imagePath);
-        } catch (error) {
-          console.error('Error deleting skill image:', error);
-        }
-      }
+      await deleteImage(skill?.lightImageUrl || null);
+      await deleteImage(skill?.darkImageUrl || null);
 
       await prisma.skill.delete({
         where: { id }

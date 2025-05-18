@@ -48,7 +48,10 @@ interface SkillFormProps {
 }
 
 export function SkillForm({ open, onOpenChange }: SkillFormProps) {
-  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [selectedImageDark, setSelectedImageDark] = useState<File | null>(null);
+  const [selectedImageLight, setSelectedImageLight] = useState<File | null>(
+    null
+  );
   const createSkill = useCreateSkill();
 
   const form = useForm<FormData>({
@@ -56,7 +59,8 @@ export function SkillForm({ open, onOpenChange }: SkillFormProps) {
     defaultValues: {
       name: "",
       type: "frontend",
-      imageUrl: "",
+      darkImageUrl: "",
+      lightImageUrl: "",
       docsLink: "",
       isPublic: false,
     },
@@ -71,35 +75,51 @@ export function SkillForm({ open, onOpenChange }: SkillFormProps) {
     formData.append("isPublic", String(values.isPublic));
 
     // Add image if selected
-    if (selectedImage) {
-      formData.append("image", selectedImage);
+    if (selectedImageDark) {
+      formData.append("darkImage", selectedImageDark);
+    }
+    if (selectedImageLight) {
+      formData.append("lightImage", selectedImageLight);
     }
 
     createSkill.mutate(formData, {
       onSuccess: () => {
         form.reset();
-        setSelectedImage(null);
+        setSelectedImageDark(null);
+        setSelectedImageLight(null);
         onOpenChange(false);
       },
     });
   };
 
-  const handleImageChange = (file: File | null) => {
-    setSelectedImage(file);
+  const handleImageChange = (file: File | null, isDark: boolean) => {
+    if (isDark) {
+      setSelectedImageDark(file);
+    } else {
+      setSelectedImageLight(file);
+    }
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        form.setValue("imageUrl", reader.result as string);
+        if (isDark) {
+          form.setValue("darkImageUrl", reader.result as string);
+        } else {
+          form.setValue("lightImageUrl", reader.result as string);
+        }
       };
       reader.readAsDataURL(file);
     } else {
-      form.setValue("imageUrl", "");
+      if (isDark) {
+        form.setValue("darkImageUrl", "");
+      } else {
+        form.setValue("lightImageUrl", "");
+      }
     }
   };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[600px]">
         <DialogHeader>
           <DialogTitle>Add Skill</DialogTitle>
           <DialogDescription>
@@ -111,26 +131,48 @@ export function SkillForm({ open, onOpenChange }: SkillFormProps) {
             onSubmit={form.handleSubmit(handleSubmit)}
             className="space-y-4"
           >
-            <FormField
-              control={form.control}
-              name="imageUrl"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Skill Icon</FormLabel>
-                  <FormControl>
-                    <ImageUpload
-                      value={field.value}
-                      onChange={handleImageChange}
-                      onRemove={() => {
-                        setSelectedImage(null);
-                        field.onChange("");
-                      }}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <div className="flex flex-row gap-2 w-full">
+              <FormField
+                control={form.control}
+                name="darkImageUrl"
+                render={({ field }) => (
+                  <FormItem className="w-1/2">
+                    <FormLabel>Skill Icon (dark mode)</FormLabel>
+                    <FormControl>
+                      <ImageUpload
+                        value={field.value}
+                        onChange={(file) => handleImageChange(file, true)}
+                        onRemove={() => {
+                          setSelectedImageLight(null);
+                          field.onChange("");
+                        }}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="lightImageUrl"
+                render={({ field }) => (
+                  <FormItem className="w-1/2">
+                    <FormLabel>Skill Icon (light mode)</FormLabel>
+                    <FormControl>
+                      <ImageUpload
+                        value={field.value}
+                        onChange={(file) => handleImageChange(file, false)}
+                        onRemove={() => {
+                          setSelectedImageLight(null);
+                          field.onChange("");
+                        }}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
             <FormField
               control={form.control}
               name="name"
@@ -210,7 +252,8 @@ export function SkillForm({ open, onOpenChange }: SkillFormProps) {
                 variant="outline"
                 onClick={() => {
                   form.reset();
-                  setSelectedImage(null);
+                  setSelectedImageDark(null);
+                  setSelectedImageLight(null);
                   onOpenChange(false);
                 }}
               >

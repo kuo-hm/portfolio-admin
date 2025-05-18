@@ -154,6 +154,7 @@ export const projectController = {
         imageUrl = `/${relativePath}`;
       }
 
+      console.log(projectData);
       const project = await prisma.project.update({
         where: { id },
         data: {

@@ -9,7 +9,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Project } from "@/lib/validations/project";
 import Image from "next/image";
-const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+import { getImageUrl } from "../lib/utils/image";
+import { IfElse } from "./IfElse";
 
 interface ProjectCardProps {
   project: Project;
@@ -24,31 +25,24 @@ export function ProjectCard({
   onDelete,
   onPublishChange,
 }: ProjectCardProps) {
-  const imageUrl = project.imageUrl
-    ? project.imageUrl.startsWith("http")
-      ? project.imageUrl
-      : `${BACKEND_URL}${project.imageUrl}`
-    : null;
-
   return (
     <Card className="overflow-hidden h-full flex flex-col">
       <div className="relative aspect-video w-full">
-        {imageUrl ? (
+        <IfElse condition={!!project.imageUrl}>
           <Image
-            src={imageUrl}
+            src={getImageUrl(project.imageUrl!)}
             alt={project.name}
             fill
             className="object-cover"
             sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
           />
-        ) : (
           <div className="absolute inset-0 bg-muted flex items-center justify-center">
             <div className="text-center text-muted-foreground">
               <ImageIcon className="h-8 w-8 mx-auto mb-2" />
               <p className="text-xs">No image</p>
             </div>
           </div>
-        )}
+        </IfElse>
         <Button
           variant="ghost"
           size="icon"

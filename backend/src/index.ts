@@ -14,13 +14,19 @@ import resumeRoutes from './routes/resumeRoutes';
 import authRoutes from './routes/authRoutes';
 import dashboardRoutes from './routes/dashboardRoutes';
 import publicRoutes from './routes/publicRoutes';
-
+import { requestLogger } from './middleware/requestLogger';
+import logger from './utils/logger';
 
 dotenv.config();
 
 const app = express();
 const port = process.env.PORT || 3000;
 
+// Create logs directory if it doesn't exist
+const logsDir = path.join(__dirname, '../logs');
+if (!fs.existsSync(logsDir)) {
+  fs.mkdirSync(logsDir, { recursive: true });
+}
 
 const allowedOrigins = (process.env.ALLOWED_ORIGINS || 'http://localhost:3000').split(',');
 const corsOptions = {
@@ -36,7 +42,6 @@ const corsOptions = {
   allowedHeaders: ['Content-Type', 'Authorization']
 };
 
-
 const swaggerOptions = {
   definition: {
     openapi: '3.0.0',
@@ -47,8 +52,13 @@ const swaggerOptions = {
     },
     servers: [
       {
-        url: `http://185.197.251.224:8002`,
+        url: process.env.SWAGGER_URL || `http://localhost:${port}`,
+        description: 'API Server'
       },
+      {
+        url: process.env.PRODUCTION_URL || `http://185.197.251.224:${port}`,
+        description: 'Production Server'
+      }
     ],
     components: {
       securitySchemes: {
@@ -68,21 +78,21 @@ const swaggerOptions = {
 const swaggerSpec = swaggerJSDoc(swaggerOptions);
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
-
 const uploadsDir = path.join(__dirname, '../uploads');
 if (!fs.existsSync(uploadsDir)) {
   fs.mkdirSync(uploadsDir, { recursive: true });
 }
-
 
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors(corsOptions));
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
+// Add request logger middleware
+app.use(requestLogger);
 
 const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
-  console.error(err.stack);
+  logger.error('Application error', { error: err.message, stack: err.stack });
   if (err.name === 'ValidationError') {
     res.status(400).json({ error: err.message });
     return;
@@ -92,7 +102,6 @@ const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
 
 app.use(errorHandler);
 
-
 app.use('/api', routes);
 app.use('/api/projects', projectRoutes);
 app.use('/api/skills', skillRoutes);
@@ -101,14 +110,12 @@ app.use('/api/auth', authRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/public', publicRoutes);
 
-
 app.get('/health', (req, res) => {
   res.json({ status: 'healthy' });
 });
 
-
 app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
-  console.log(`Swagger docs available at http://localhost:${port}/docs`);
-  console.log('Allowed CORS origins:', allowedOrigins);
+  logger.info(`Server is running on port ${port}`);
+  logger.info(`Swagger docs available at http://localhost:${port}/docs`);
+  logger.info('Allowed CORS origins:', { origins: allowedOrigins });
 }); 

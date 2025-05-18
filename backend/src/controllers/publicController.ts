@@ -63,7 +63,8 @@ export const publicController = {
           id: true,
           name: true,
           type: true,
-          imageUrl: true,
+          lightImageUrl: true,
+          darkImageUrl: true,
           docsLink: true,
           createdAt: true,
           updatedAt: true

@@ -38,8 +38,9 @@ export const dashboardController = {
           id: true,
           name: true,
           type: true,
-          imageUrl: true,
-          createdAt: true
+          createdAt: true,
+          lightImageUrl: true,
+          darkImageUrl: true
         }
       });
 

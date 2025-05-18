@@ -35,11 +35,15 @@ import {
 import { getImageUrl } from "@/lib/utils/image";
 import { Skill } from "@/lib/validations/skill";
 
-const formSchema = skillSchema.omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true,
-});
+const formSchema = skillSchema
+  .omit({
+    id: true,
+    createdAt: true,
+    updatedAt: true,
+  })
+  .extend({
+    isPublic: z.boolean().optional(),
+  });
 type FormData = z.infer<typeof formSchema>;
 
 interface SkillEditFormProps {
@@ -53,7 +57,10 @@ export function SkillEditForm({
   open,
   onOpenChange,
 }: SkillEditFormProps) {
-  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [selectedImageDark, setSelectedImageDark] = useState<File | null>(null);
+  const [selectedImageLight, setSelectedImageLight] = useState<File | null>(
+    null
+  );
   const updateSkill = useUpdateSkill();
 
   const form = useForm<FormData>({
@@ -61,22 +68,35 @@ export function SkillEditForm({
     defaultValues: {
       name: skill.name,
       type: skill.type,
-      imageUrl: getImageUrl(skill.imageUrl),
+      darkImageUrl: getImageUrl(skill.darkImageUrl),
+      lightImageUrl: getImageUrl(skill.lightImageUrl),
       docsLink: skill.docsLink,
       isPublic: skill.isPublic,
     },
   });
 
-  const handleImageChange = (file: File | null) => {
-    setSelectedImage(file);
+  const handleImageChange = (file: File | null, isDark: boolean) => {
+    if (isDark) {
+      setSelectedImageDark(file);
+    } else {
+      setSelectedImageLight(file);
+    }
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        form.setValue("imageUrl", reader.result as string);
+        if (isDark) {
+          form.setValue("darkImageUrl", reader.result as string);
+        } else {
+          form.setValue("lightImageUrl", reader.result as string);
+        }
       };
       reader.readAsDataURL(file);
     } else {
-      form.setValue("imageUrl", "");
+      if (isDark) {
+        form.setValue("darkImageUrl", "");
+      } else {
+        form.setValue("lightImageUrl", "");
+      }
     }
   };
 
@@ -87,15 +107,23 @@ export function SkillEditForm({
     formData.append("docsLink", values.docsLink);
     formData.append("isPublic", String(values.isPublic));
 
-    if (selectedImage) {
-      formData.append("image", selectedImage);
+    if (selectedImageDark) {
+      formData.append("darkImage", selectedImageDark);
+    }
+    if (selectedImageLight) {
+      formData.append("lightImage", selectedImageLight);
     }
 
     updateSkill.mutate(
-      { id: skill.id, ...formData },
+      { id: skill.id, skill: formData },
       {
         onSuccess: () => {
+          setSelectedImageDark(null);
+          setSelectedImageLight(null);
           onOpenChange(false);
+        },
+        onError: (error) => {
+          console.error("Update error:", error);
         },
       }
     );
@@ -109,26 +137,48 @@ export function SkillEditForm({
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="imageUrl"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Skill Icon</FormLabel>
-                  <FormControl>
-                    <ImageUpload
-                      value={field.value}
-                      onChange={handleImageChange}
-                      onRemove={() => {
-                        setSelectedImage(null);
-                        field.onChange("");
-                      }}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <div className="flex flex-row gap-2 w-full">
+              <FormField
+                control={form.control}
+                name="darkImageUrl"
+                render={({ field }) => (
+                  <FormItem className="w-1/2">
+                    <FormLabel>Skill Icon (dark mode)</FormLabel>
+                    <FormControl>
+                      <ImageUpload
+                        value={field.value}
+                        onChange={(file) => handleImageChange(file, true)}
+                        onRemove={() => {
+                          setSelectedImageDark(null);
+                          field.onChange("");
+                        }}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="lightImageUrl"
+                render={({ field }) => (
+                  <FormItem className="w-1/2">
+                    <FormLabel>Skill Icon (light mode)</FormLabel>
+                    <FormControl>
+                      <ImageUpload
+                        value={field.value}
+                        onChange={(file) => handleImageChange(file, false)}
+                        onRemove={() => {
+                          setSelectedImageLight(null);
+                          field.onChange("");
+                        }}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
             <FormField
               control={form.control}
               name="name"

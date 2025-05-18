@@ -58,9 +58,17 @@ export function useUpdateSkill() {
   return useMutation({
     mutationFn: async ({
       id,
-      ...skill
-    }: Partial<Skill> & { id: string }) => {
-      const { data } = await api.put(`/skills/${id}`, skill);
+      skill
+    }: {
+      id: string;
+      skill: FormData;
+    }) => {
+      console.log("skill", skill.get("name"), skill.get("type"), skill.get("docsLink"), skill.get("isPublic"));
+      const { data } = await api.put(`/skills/${id}`, skill, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
       return data;
     },
     onSuccess: (_, variables) => {

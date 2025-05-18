@@ -20,24 +20,29 @@ const storage = multer.diskStorage({
   },
   filename: (req, file, cb) => {
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
+    const mode = file.fieldname.includes('dark') ? 'dark' : 'light';
+    cb(null, `${mode}-${uniqueSuffix}${path.extname(file.originalname)}`);
   }
 });
 
 const upload = multer({
   storage,
   fileFilter: (req, file, cb) => {
-    const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
-    if (allowedTypes.includes(file.mimetype)) {
+    if (file.mimetype.startsWith('image/')) {
       cb(null, true);
     } else {
-      cb(new Error('Invalid file type. Only JPEG, PNG and GIF are allowed.'));
+      cb(new Error('Invalid file type. Only JPEG, PNG, GIF and SVG are allowed.'));
     }
   },
   limits: {
     fileSize: 5 * 1024 * 1024 
   }
 });
+
+const uploadBothImages = upload.fields([
+  { name: 'lightImage', maxCount: 1 },
+  { name: 'darkImage', maxCount: 1 }
+]);
 
 /**
  * @swagger
@@ -83,7 +88,9 @@ const upload = multer({
  *                       type:
  *                         type: string
  *                         enum: [backend, frontend, database, other]
- *                       imageUrl:
+ *                       lightImageUrl:
+ *                         type: string
+ *                       darkImageUrl:
  *                         type: string
  *                       docsLink:
  *                         type: string
@@ -157,13 +164,17 @@ router.get('/:id', skillController.getSkillById as RequestHandler);
  *             required:
  *               - name
  *               - type
+ *               - lightImage
  *             properties:
  *               name:
  *                 type: string
  *               type:
  *                 type: string
  *                 enum: [backend, frontend, database, other]
- *               image:
+ *               lightImage:
+ *                 type: string
+ *                 format: binary
+ *               darkImage:
  *                 type: string
  *                 format: binary
  *               docsLink:
@@ -181,7 +192,7 @@ router.get('/:id', skillController.getSkillById as RequestHandler);
  *         description: Invalid input or file type
  */
 
-router.post('/', upload.single('image'), skillController.createSkill as RequestHandler);
+router.post('/', uploadBothImages, skillController.createSkill as RequestHandler);
 
 /**
  * @swagger
@@ -209,7 +220,10 @@ router.post('/', upload.single('image'), skillController.createSkill as RequestH
  *               type:
  *                 type: string
  *                 enum: [backend, frontend, database, other]
- *               image:
+ *               lightImage:
+ *                 type: string
+ *                 format: binary
+ *               darkImage:
  *                 type: string
  *                 format: binary
  *               docsLink:
@@ -226,7 +240,7 @@ router.post('/', upload.single('image'), skillController.createSkill as RequestH
  *         description: Skill not found
  */
 
-router.put('/:id', upload.single('image'), skillController.updateSkill as RequestHandler);
+router.put('/:id', uploadBothImages, skillController.updateSkill as RequestHandler);
 
 /**
  * @swagger

@@ -4,9 +4,10 @@ export const skillSchema = z.object({
   id: z.string(),
   name: z.string().min(1, "Name is required"),
   type: z.enum(["frontend", "backend", "database", "devops", "other"]),
-  imageUrl: z.string().url("Must be a valid URL"),
+  darkImageUrl: z.string().url("Must be a valid URL"),
+  lightImageUrl: z.string().url("Must be a valid URL"),
   docsLink: z.string().url("Must be a valid URL"),
-  isPublic: z.boolean().optional(),
+  isPublic: z.boolean().default(false),
   createdAt: z.string().datetime(),
   updatedAt: z.string().datetime(),
 });

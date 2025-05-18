@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Upload, X } from "lucide-react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 interface ImageUploadProps {
   value?: string;
@@ -25,7 +26,15 @@ export function ImageUpload({
   const handleFile = useCallback(
     (file: File) => {
       if (file.size > 5 * 1024 * 1024) {
-        alert("File size should be less than 5MB");
+        toast.error("File size should be less than 5MB", {
+          description: "Please try again with a smaller file",
+          position: "top-center",
+          className: "bg-red-500 text-white",
+          style: {
+            backgroundColor: "#f87171",
+            color: "#fff",
+          },
+        });
         return;
       }
 
