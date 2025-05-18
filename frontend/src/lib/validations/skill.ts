@@ -7,7 +7,7 @@ export const skillSchema = z.object({
   darkImageUrl: z.string().url("Must be a valid URL"),
   lightImageUrl: z.string().url("Must be a valid URL"),
   docsLink: z.string().url("Must be a valid URL"),
-  isPublic: z.boolean().default(false),
+  isPublic: z.boolean(),
   createdAt: z.string().datetime(),
   updatedAt: z.string().datetime(),
 });
