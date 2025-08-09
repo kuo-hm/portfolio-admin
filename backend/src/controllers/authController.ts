@@ -24,9 +24,13 @@ const generateTokens = (userId: string, email: string) => {
 
 export const authController = {
   async signup(req: Request, res: Response) {
+    const isProduction = process.env.NODE_ENV === 'production';
+    if (isProduction) {
+      return
+    }
     try {
       const { email, password, name } = req.body as SignupDto;
-
+      
       const existingUser = await prisma.user.findUnique({
         where: { email }
       });
