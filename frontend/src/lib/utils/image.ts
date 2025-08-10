@@ -1,6 +1,9 @@
-export const getImageUrl = (url: string): string => {
-  if (!url) return "/no-image-svgrepo-com.svg";
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
-  const imageUrl = apiUrl.replace('/api', "") + url;
-  return imageUrl;
-}; 
+export function getImageUrl(imageUrl: string) {
+  const backEndUrl = process.env.NEXT_PUBLIC_API_URL;
+  if (!backEndUrl) {
+    return imageUrl;
+  }
+  const encodedImageUrl = encodeURIComponent(imageUrl);
+  console.log(`${backEndUrl}/public/image?path=${encodedImageUrl}`);
+  return `${backEndUrl}/public/image?path=${encodedImageUrl}`;
+}

@@ -1,5 +1,5 @@
-import express from 'express';
-import { publicController } from '../controllers/publicController';
+import express from "express";
+import { publicController } from "../controllers/publicController";
 
 const router = express.Router();
 
@@ -74,7 +74,7 @@ const router = express.Router();
  *       500:
  *         description: Internal server error
  */
-router.get('/projects', publicController.getPublicProjects);
+router.get("/projects", publicController.getPublicProjects);
 
 /**
  * @swagger
@@ -112,7 +112,7 @@ router.get('/projects', publicController.getPublicProjects);
  *       500:
  *         description: Internal server error
  */
-router.get('/skills', publicController.getPublicSkills);
+router.get("/skills", publicController.getPublicSkills);
 
 /**
  * @swagger
@@ -146,6 +146,38 @@ router.get('/skills', publicController.getPublicSkills);
  *       500:
  *         description: Internal server error
  */
-router.get('/resumes', publicController.getPublicResumes);
+router.get("/resumes", publicController.getPublicResumes);
 
-export default router; 
+/**
+ * @swagger
+ * /public/image:
+ *   get:
+ *     summary: Serve an uploaded image by relative path
+ *     tags: [Public]
+ *     parameters:
+ *       - in: query
+ *         name: path
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Relative path to the image inside the uploads directory (e.g. skills/skill-light-1754787611779-55160866.svg)
+ *     responses:
+ *       200:
+ *         description: The image file
+ *         content:
+ *           image/png: {}
+ *           image/jpeg: {}
+ *           image/svg+xml: {}
+ *           image/webp: {}
+ *       400:
+ *         description: Image path is required
+ *       403:
+ *         description: Access denied
+ *       404:
+ *         description: Image not found
+ *       500:
+ *         description: Error reading image file
+ */
+router.get("/image", publicController.getImage);
+
+export default router;

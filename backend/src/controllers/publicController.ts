@@ -1,108 +1,117 @@
-import { Request, Response } from 'express';
-import { PrismaClient } from '@prisma/client';
+import { RequestHandler } from "express";
+import { PrismaClient } from "@prisma/client";
+import path from "path";
+import fs from "fs";
 
 const prisma = new PrismaClient();
 
 export const publicController = {
-  async getPublicProjects(req: Request, res: Response) {
-    try {
-      const page = parseInt(req.query.page as string) || 1;
-      const limit = parseInt(req.query.limit as string) || 10;
-      const skip = (page - 1) * limit;
+  getPublicProjects: (async (req, res) => {
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 10;
+    const skip = (page - 1) * limit;
 
-      // Get total count for pagination
-      const total = await prisma.project.count({
-        where: {
-          isPublic: true
-        }
-      });
+    const total = await prisma.project.count({ where: { isPublic: true } });
+    const projects = await prisma.project.findMany({
+      where: { isPublic: true },
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        websiteLink: true,
+        githubLink: true,
+        imageUrl: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+      orderBy: { createdAt: "desc" },
+      skip,
+      take: limit,
+    });
 
-      const projects = await prisma.project.findMany({
-        where: {
-          isPublic: true
-        },
-        select: {
-          id: true,
-          name: true,
-          description: true,
-          websiteLink: true,
-          githubLink: true,
-          imageUrl: true,
-          createdAt: true,
-          updatedAt: true
-        },
-        orderBy: {
-          createdAt: 'desc'
-        },
-        skip,
-        take: limit
-      });
+    res.json({
+      data: projects,
+      meta: { total, page, limit, totalPages: Math.ceil(total / limit) },
+    });
+  }) as RequestHandler,
 
-      res.json({
-        data: projects,
-        meta: {
-          total,
-          page,
-          limit,
-          totalPages: Math.ceil(total / limit)
-        }
-      });
-    } catch (error) {
-      console.error('Get public projects error:', error);
-      res.status(500).json({ message: 'Internal server error' });
+  getPublicSkills: (async (req, res) => {
+    const skills = await prisma.skill.findMany({
+      where: { isPublic: true },
+      select: {
+        id: true,
+        name: true,
+        type: true,
+        lightImageUrl: true,
+        darkImageUrl: true,
+        docsLink: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+      orderBy: { createdAt: "desc" },
+    });
+    res.json(skills);
+  }) as RequestHandler,
+
+  getPublicResumes: (async (req, res) => {
+    const resumes = await prisma.resume.findMany({
+      where: { isPublic: true },
+      select: {
+        id: true,
+        fileName: true,
+        language: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+      orderBy: { createdAt: "desc" },
+    });
+    res.json(resumes);
+  }) as RequestHandler,
+
+  getImage: (async (req, res) => {
+    const { path: encodedImagePath } = req.query;
+
+    if (!encodedImagePath || typeof encodedImagePath !== "string") {
+      return res.status(400).json({ message: "Image path is required" });
     }
-  },
 
-  async getPublicSkills(req: Request, res: Response) {
-    try {
-      const skills = await prisma.skill.findMany({
-        where: {
-          isPublic: true
-        },
-        select: {
-          id: true,
-          name: true,
-          type: true,
-          lightImageUrl: true,
-          darkImageUrl: true,
-          docsLink: true,
-          createdAt: true,
-          updatedAt: true
-        },
-        orderBy: {
-          createdAt: 'desc'
-        }
-      });
+    const imagePath = decodeURIComponent(encodedImagePath);
+    const uploadsDir = path.resolve(__dirname, "../..");
+    const fullPath = path.join(
+      uploadsDir,
+      path.normalize(imagePath).replace(/^(\.\.[\/\\])+/, "")
+    );
 
-      res.json(skills);
-    } catch (error) {
-      console.error('Get public skills error:', error);
-      res.status(500).json({ message: 'Internal server error' });
+    console.log(`Serving image from: ${fullPath}`);
+
+    if (!fullPath.startsWith(uploadsDir)) {
+      return res.status(403).json({ message: "Access denied" });
     }
-  },
 
-  async getPublicResumes(req: Request, res: Response) {
-    try {
-      const resumes = await prisma.resume.findMany({
-        where: {
-          isPublic: true
-        },
-        select: {
-          id: true,
-          fileName: true,
-          language: true,
-          createdAt: true,
-          updatedAt: true
-        },
-        orderBy: {
-          createdAt: 'desc'
-        }
-      });
+    fs.stat(fullPath, (err, stats) => {
+      if (err || !stats.isFile()) {
+        return res.status(404).json({ message: "Image not found" });
+      }
 
-      res.json(resumes);
-    } catch (error) {
-      console.error('Get public resumes error:', error);
-      res.status(500).json({ message: 'Internal server error' });
-    }
-  }
-}; 
+      const ext = path.extname(fullPath).toLowerCase();
+      const mimeTypes: Record<string, string> = {
+        ".jpg": "image/jpeg",
+        ".jpeg": "image/jpeg",
+        ".png": "image/png",
+        ".gif": "image/gif",
+        ".svg": "image/svg+xml",
+        ".webp": "image/webp",
+      };
+      res.setHeader(
+        "Content-Type",
+        mimeTypes[ext] || "application/octet-stream"
+      );
+
+      fs.createReadStream(fullPath)
+        .pipe(res)
+        .on("error", () =>
+          res.status(500).json({ message: "Error reading image file" })
+        );
+    });
+  }) as RequestHandler,
+};
