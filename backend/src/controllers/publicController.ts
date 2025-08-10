@@ -2,6 +2,9 @@ import { RequestHandler } from "express";
 import { PrismaClient } from "@prisma/client";
 import path from "path";
 import fs from "fs";
+import { validate } from "class-validator";
+import { plainToInstance } from "class-transformer";
+import { EmailDto } from "../dto/email.dto";
 
 const prisma = new PrismaClient();
 
@@ -157,5 +160,20 @@ export const publicController = {
           res.status(500).json({ message: "Error reading PDF file" })
         );
     });
+  }) as RequestHandler,
+
+  saveEmail: (async (req, res) => {
+    const emailData = plainToInstance(EmailDto, req.body);
+    const errors = await validate(emailData);
+
+    if (errors.length > 0) {
+      return res.status(400).json({ errors });
+    }
+
+    const email = await prisma.email.create({
+      data: emailData,
+    });
+
+    res.status(201).json(email);
   }) as RequestHandler,
 };

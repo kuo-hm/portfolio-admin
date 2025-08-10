@@ -180,7 +180,7 @@ router.get("/resumes", publicController.getPublicResumes);
  */
 router.get("/image", publicController.getImage);
 
-
 router.get("/pdf", publicController.getPDF);
 
+router.post("/email", publicController.saveEmail);
 export default router;
