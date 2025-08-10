@@ -111,6 +111,7 @@ export function ImageUpload({
           alt="Upload preview"
           fill
           className="object-cover"
+          unoptimized
         />
         <Button
           type="button"
