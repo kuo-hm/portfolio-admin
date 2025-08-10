@@ -4,6 +4,5 @@ export function getImageUrl(imageUrl: string) {
     return imageUrl;
   }
   const encodedImageUrl = encodeURIComponent(imageUrl);
-  console.log(`${backEndUrl}/public/image?path=${encodedImageUrl}`);
   return `${backEndUrl}/public/image?path=${encodedImageUrl}`;
 }

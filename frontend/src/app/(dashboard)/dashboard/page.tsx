@@ -73,6 +73,7 @@ export default function DashboardPage() {
                           alt={project.name}
                           fill
                           className="object-cover"
+                          unoptimized
                         />
                       </div>
                     ) : (
@@ -113,6 +114,7 @@ export default function DashboardPage() {
                           alt={skill.name}
                           fill
                           className="object-cover"
+                          unoptimized
                         />
                       </div>
                     ) : (

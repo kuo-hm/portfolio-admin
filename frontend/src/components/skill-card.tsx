@@ -40,6 +40,7 @@ export function SkillCard({ skill, onEdit, onDelete }: SkillCardProps) {
             src={getImageUrl(skill.darkImageUrl)}
             alt={skill.name}
             fill
+            unoptimized
             className="object-contain"
             sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
           />
@@ -47,6 +48,7 @@ export function SkillCard({ skill, onEdit, onDelete }: SkillCardProps) {
             src={getImageUrl(skill.darkImageUrl)}
             alt={skill.name}
             fill
+            unoptimized
             className="object-contain"
             sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
           />
