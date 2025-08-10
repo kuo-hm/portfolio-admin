@@ -26,19 +26,13 @@ export const resumeController = {
       const language = req.query.language as Language | undefined;
       const isPublic = req.query.isPublic === "true";
 
-      const where = {
-        ...(language && { language }),
-        ...(isPublic !== undefined && { isPublic }),
-      };
-
       const [resumes, total] = await Promise.all([
         prisma.resume.findMany({
-          where,
           skip,
           take: limit,
           orderBy: { createdAt: "desc" },
         }),
-        prisma.resume.count({ where }),
+        prisma.resume.count({}),
       ]);
 
       const response: PaginatedResponse<(typeof resumes)[0]> = {
