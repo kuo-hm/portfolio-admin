@@ -75,8 +75,12 @@ export function ResumeForm({ open, onOpenChange }: ResumeFormProps) {
     if (!values.file) {
       return;
     }
-
-    uploadResume.mutate(values.file, {
+    const payload = {
+      file: values.file,
+      language: values.language,
+      isPublic: values.isPublic,
+    };
+    uploadResume.mutate(payload, {
       onSuccess: () => {
         onOpenChange(false);
         form.reset();

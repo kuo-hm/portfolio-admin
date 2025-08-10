@@ -1,9 +1,9 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { api } from '@/lib/api';
-import { Resume, ErrorResponse } from '@/types/api';
-import { toast } from 'sonner';
-import { AxiosError } from 'axios';
-import { ResumeResponse } from "@/lib/validations/resume";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { api } from "@/lib/api";
+import { Resume, ErrorResponse } from "@/types/api";
+import { toast } from "sonner";
+import { AxiosError } from "axios";
+import { Language, ResumeResponse } from "@/lib/validations/resume";
 
 export function useResumes() {
   return useQuery<ResumeResponse>({
@@ -17,7 +17,7 @@ export function useResumes() {
 
 export function useResume(id: string) {
   return useQuery<Resume>({
-    queryKey: ['resumes', id],
+    queryKey: ["resumes", id],
     queryFn: async () => {
       const { data } = await api.get(`/resumes/${id}`);
       return data;
@@ -30,23 +30,29 @@ export function useUploadResume() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (file: File) => {
+    mutationFn: async (payload: {
+      file: File;
+      language: Language;
+      isPublic: boolean;
+    }) => {
       const formData = new FormData();
-      formData.append('resume', file);
+      formData.append("resume", payload.file);
+      formData.append("language", payload.language);
+      formData.append("isPublic", String(payload.isPublic));
 
-      const { data } = await api.post('/resumes', formData, {
+      const { data } = await api.post("/resumes", formData, {
         headers: {
-          'Content-Type': 'multipart/form-data',
+          "Content-Type": "multipart/form-data",
         },
       });
       return data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['resumes'] });
-      toast.success('Resume uploaded successfully');
+      queryClient.invalidateQueries({ queryKey: ["resumes"] });
+      toast.success("Resume uploaded successfully");
     },
     onError: (error: AxiosError<ErrorResponse>) => {
-      toast.error(error.response?.data?.message || 'Failed to upload resume');
+      toast.error(error.response?.data?.message || "Failed to upload resume");
     },
   });
 }
@@ -59,11 +65,11 @@ export function useDeleteResume() {
       await api.delete(`/resumes/${id}`);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['resumes'] });
-      toast.success('Resume deleted successfully');
+      queryClient.invalidateQueries({ queryKey: ["resumes"] });
+      toast.success("Resume deleted successfully");
     },
     onError: (error: AxiosError<ErrorResponse>) => {
-      toast.error(error.response?.data?.message || 'Failed to delete resume');
+      toast.error(error.response?.data?.message || "Failed to delete resume");
     },
   });
 }
@@ -75,17 +81,17 @@ export function useUpdateResume() {
     mutationFn: async ({ id, data }: { id: string; data: FormData }) => {
       const { data: response } = await api.patch(`/resumes/${id}`, data, {
         headers: {
-          'Content-Type': 'multipart/form-data',
+          "Content-Type": "multipart/form-data",
         },
       });
       return response;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['resumes'] });
-      toast.success('Resume updated successfully');
+      queryClient.invalidateQueries({ queryKey: ["resumes"] });
+      toast.success("Resume updated successfully");
     },
     onError: (error: AxiosError<ErrorResponse>) => {
-      toast.error(error.response?.data?.message || 'Failed to update resume');
+      toast.error(error.response?.data?.message || "Failed to update resume");
     },
   });
-} 
+}

@@ -180,4 +180,7 @@ router.get("/resumes", publicController.getPublicResumes);
  */
 router.get("/image", publicController.getImage);
 
+
+router.get("/pdf", publicController.getPDF);
+
 export default router;

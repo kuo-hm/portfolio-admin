@@ -62,6 +62,7 @@ export const publicController = {
         language: true,
         createdAt: true,
         updatedAt: true,
+        filePath: true,
       },
       orderBy: { createdAt: "desc" },
     });
@@ -111,6 +112,49 @@ export const publicController = {
         .pipe(res)
         .on("error", () =>
           res.status(500).json({ message: "Error reading image file" })
+        );
+    });
+  }) as RequestHandler,
+  getPDF: (async (req, res) => {
+    const { path: encodedPDFPath } = req.query;
+
+    if (!encodedPDFPath || typeof encodedPDFPath !== "string") {
+      return res.status(400).json({ message: "PDF path is required" });
+    }
+
+    const pdfPath = decodeURIComponent(encodedPDFPath);
+    const uploadsDir = path.resolve(__dirname, "../..");
+    const fullPath = path.join(
+      uploadsDir,
+      path.normalize(pdfPath).replace(/^(\.\.[\/\\])+/, "")
+    );
+
+    console.log(`Serving PDF from: ${fullPath}`);
+
+    if (!fullPath.startsWith(uploadsDir)) {
+      return res.status(403).json({ message: "Access denied" });
+    }
+
+    fs.stat(fullPath, (err, stats) => {
+      if (err || !stats.isFile()) {
+        return res.status(404).json({ message: "PDF not found" });
+      }
+
+      const ext = path.extname(fullPath).toLowerCase();
+      if (ext !== ".pdf") {
+        return res.status(400).json({ message: "Invalid file type" });
+      }
+
+      res.setHeader("Content-Type", "application/pdf");
+      res.setHeader(
+        "Content-Disposition",
+        `attachment; filename="${path.basename(fullPath)}"`
+      );
+
+      fs.createReadStream(fullPath)
+        .pipe(res)
+        .on("error", () =>
+          res.status(500).json({ message: "Error reading PDF file" })
         );
     });
   }) as RequestHandler,
