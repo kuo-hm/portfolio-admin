@@ -66,20 +66,10 @@ export default function DashboardPage() {
               <div className="space-y-4">
                 {data?.recentProjects.map((project) => (
                   <div key={project.id} className="flex items-center gap-4">
-                    {project.darkImageUrl ? (
+                    {project.imageUrl ? (
                       <div className="relative h-16 w-16 flex-none overflow-hidden rounded-lg">
                         <Image
-                          src={getImageUrl(project.darkImageUrl)}
-                          alt={project.name}
-                          fill
-                          className="object-cover"
-                          unoptimized
-                        />
-                      </div>
-                    ) : project.lightImageUrl ? (
-                      <div className="relative h-16 w-16 flex-none overflow-hidden rounded-lg">
-                        <Image
-                          src={getImageUrl(project.lightImageUrl)}
+                          src={getImageUrl(project.imageUrl)}
                           alt={project.name}
                           fill
                           className="object-cover"
@@ -117,10 +107,20 @@ export default function DashboardPage() {
               <div className="space-y-4">
                 {data?.recentSkills.map((skill) => (
                   <div key={skill.id} className="flex items-center gap-4">
-                    {skill.imageUrl ? (
+                    {skill.darkImageUrl ? (
                       <div className="relative h-16 w-16 flex-none overflow-hidden rounded-lg">
                         <Image
-                          src={getImageUrl(skill.imageUrl)}
+                          src={getImageUrl(skill.darkImageUrl)}
+                          alt={skill.name}
+                          fill
+                          className="object-cover"
+                          unoptimized
+                        />
+                      </div>
+                    ) : skill.lightImageUrl ? (
+                      <div className="relative h-16 w-16 flex-none overflow-hidden rounded-lg">
+                        <Image
+                          src={getImageUrl(skill.lightImageUrl)}
                           alt={skill.name}
                           fill
                           className="object-cover"

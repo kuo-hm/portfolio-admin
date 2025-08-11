@@ -11,15 +11,16 @@ interface DashboardData {
     id: string;
     name: string;
     description: string;
-    darkImageUrl: string;
-    lightImageUrl: string;
+    imageUrl: string;
+
     createdAt: string;
   }>;
   recentSkills: Array<{
     id: string;
     name: string;
     type: string;
-    imageUrl: string;
+    darkImageUrl: string;
+    lightImageUrl: string;
     createdAt: string;
   }>;
 }
