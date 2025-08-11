@@ -13,6 +13,7 @@ import {
   LogOut,
   User,
   Menu,
+  MailIcon,
 } from "lucide-react";
 import { Button } from "./ui/button";
 import { useState } from "react";
@@ -24,6 +25,7 @@ const navigation = [
   { name: "Projects", href: "/projects", icon: FolderKanban },
   { name: "Skills", href: "/skills", icon: Wrench },
   { name: "Resumes", href: "/resumes", icon: FileText },
+  { name: "Emails", href: "/emails", icon: MailIcon },
 ];
 
 export function Sidebar() {

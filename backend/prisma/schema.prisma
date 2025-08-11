@@ -65,7 +65,7 @@ model Email {
   subject String
   message String
 
-  isPublic Boolean @default(false)
+  isSeen Boolean @default(false)
 }
 
 enum SkillType {
