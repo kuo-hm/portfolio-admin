@@ -20,15 +20,16 @@ export default function EmailPage() {
         <h1 className="text-3xl font-bold">Emails</h1>
       </div>
 
-    
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="flex flex-col justify-between h-full">
         <EmailTable emails={data.data} />
-        <PaginationControls
-          skip={skip}
-          limit={limit}
-          total={data.meta.total}
-          onPageChange={(newSkip) => setSkip(Math.max(0, newSkip))}
-        />
+        {data && data.meta && data.meta.totalPages == 1 && (
+          <PaginationControls
+            skip={skip}
+            limit={limit}
+            total={data.meta.total}
+            onPageChange={(newSkip) => setSkip(Math.max(0, newSkip))}
+          />
+        )}
       </div>
     </div>
   );

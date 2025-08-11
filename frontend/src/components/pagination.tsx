@@ -17,7 +17,7 @@ export function PaginationControls({
   const currentPage = Math.floor(skip / limit) + 1;
 
   return (
-    <div className="flex gap-2 mt-4">
+    <div className="flex gap-2 items-end justify-end mt-8">
       <button
         disabled={currentPage === 1}
         onClick={() => onPageChange(skip - limit)}
