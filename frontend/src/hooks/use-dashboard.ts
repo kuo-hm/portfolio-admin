@@ -1,5 +1,5 @@
-import { useQuery } from '@tanstack/react-query';
-import { api } from '@/lib/api';
+import { useQuery } from "@tanstack/react-query";
+import { api } from "@/lib/api";
 
 interface DashboardData {
   kpis: {
@@ -11,7 +11,8 @@ interface DashboardData {
     id: string;
     name: string;
     description: string;
-    imageUrl: string | null;
+    darkImageUrl: string;
+    lightImageUrl: string;
     createdAt: string;
   }>;
   recentSkills: Array<{
@@ -25,10 +26,10 @@ interface DashboardData {
 
 export function useDashboard() {
   return useQuery<DashboardData>({
-    queryKey: ['dashboard'],
+    queryKey: ["dashboard"],
     queryFn: async () => {
-      const { data } = await api.get('/dashboard');
+      const { data } = await api.get("/dashboard");
       return data;
     },
   });
-} 
+}

@@ -66,10 +66,20 @@ export default function DashboardPage() {
               <div className="space-y-4">
                 {data?.recentProjects.map((project) => (
                   <div key={project.id} className="flex items-center gap-4">
-                    {project.imageUrl ? (
+                    {project.darkImageUrl ? (
                       <div className="relative h-16 w-16 flex-none overflow-hidden rounded-lg">
                         <Image
-                          src={getImageUrl(project.imageUrl)}
+                          src={getImageUrl(project.darkImageUrl)}
+                          alt={project.name}
+                          fill
+                          className="object-cover"
+                          unoptimized
+                        />
+                      </div>
+                    ) : project.lightImageUrl ? (
+                      <div className="relative h-16 w-16 flex-none overflow-hidden rounded-lg">
+                        <Image
+                          src={getImageUrl(project.lightImageUrl)}
                           alt={project.name}
                           fill
                           className="object-cover"
