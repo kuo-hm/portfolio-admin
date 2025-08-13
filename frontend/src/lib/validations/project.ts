@@ -10,6 +10,12 @@ export const projectSchema = z.object({
   isPublic: z.boolean(),
   createdAt: z.string().optional(),
   updatedAt: z.string().optional(),
+  skills: z
+    .union([
+      z.array(z.string()), // array of strings
+      z.array(z.object({ id: z.string() })), // array of { id: string }
+    ])
+    .optional(),
 });
 
-export type Project = z.infer<typeof projectSchema>; 
+export type Project = z.infer<typeof projectSchema>;

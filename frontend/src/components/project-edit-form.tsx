@@ -1,6 +1,5 @@
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+"use client";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -10,19 +9,24 @@ import {
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-  FormDescription,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { projectSchema, type Project } from "@/lib/validations/project";
-import { useUpdateProject } from "@/hooks/use-projects";
-import { ImageUpload } from "./image-upload";
 import { Switch } from "@/components/ui/switch";
+import { useUpdateProject } from "@/hooks/use-projects";
+import { projectSchema, type Project } from "@/lib/validations/project";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
 import * as z from "zod";
+import { ImageUpload } from "./image-upload";
+import RichTextEditor from "./ui/RichTextEditor";
+import { MultiSelect } from "./multi-select";
+import { useSkills } from "../hooks/use-skills";
 
 const formSchema = projectSchema.omit({ id: true });
 type FormData = z.infer<typeof formSchema>;
@@ -40,6 +44,7 @@ export function ProjectEditForm({
 }: ProjectEditFormProps) {
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const updateProject = useUpdateProject();
+  const { data: skillsResponse } = useSkills();
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -52,7 +57,6 @@ export function ProjectEditForm({
       isPublic: project.isPublic ?? false,
     },
   });
-
   const onSubmit = async (data: FormData) => {
     if (!project.id) return;
 
@@ -84,10 +88,9 @@ export function ProjectEditForm({
   const handleImageChange = (file: File | null) => {
     setSelectedImage(file);
   };
-
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
+      <DialogContent className="h-auto max-h-[90vh] overflow-auto">
         <DialogHeader>
           <DialogTitle>Edit Project</DialogTitle>
         </DialogHeader>
@@ -125,15 +128,43 @@ export function ProjectEditForm({
                   <FormMessage />
                 </FormItem>
               )}
+            />{" "}
+            <FormField
+              control={form.control}
+              name="skills"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Skills</FormLabel>
+                  <MultiSelect
+                    onChange={field.onChange}
+                    defaultValue={
+                      project.skills?.map((skill) =>
+                        typeof skill === "string" ? skill : skill.id
+                      ) || []
+                    }
+                    options={
+                      skillsResponse?.data.map((skill) => ({
+                        label: skill.name,
+                        value: skill.id,
+                      })) || []
+                    }
+                    placeholder="Select skills..."
+                  />
+                  <FormMessage />
+                </FormItem>
+              )}
             />
             <FormField
               control={form.control}
               name="description"
               render={({ field }) => (
-                <FormItem>
+                <FormItem className="h-64">
                   <FormLabel>Description</FormLabel>
-                  <FormControl>
-                    <Input {...field} />
+                  <FormControl className="h-full">
+                    <RichTextEditor
+                      content={field.value}
+                      onChange={field.onChange}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

@@ -1,15 +1,17 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { api } from '@/lib/api';
-import { Skill,  ErrorResponse } from '@/types/api';
-import { toast } from 'sonner';
-import { AxiosError } from 'axios';
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { api } from "@/lib/api";
+import { Skill, ErrorResponse } from "@/types/api";
+import { toast } from "sonner";
+import { AxiosError } from "axios";
 import { type SkillsResponse } from "@/lib/validations/skill";
 
 export function useSkills() {
   return useQuery<SkillsResponse>({
     queryKey: ["skills"],
     queryFn: async () => {
-      const { data } = await api.get("/skills");
+      const { data } = await api.get("/skills", {
+        params: { limit: -1, skip: 0 },
+      });
       return data;
     },
   });
@@ -17,7 +19,7 @@ export function useSkills() {
 
 export function useSkill(id: string) {
   return useQuery<Skill>({
-    queryKey: ['skills', id],
+    queryKey: ["skills", id],
     queryFn: async () => {
       const { data } = await api.get(`/skills/${id}`);
       return data;
@@ -56,14 +58,14 @@ export function useUpdateSkill() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({
-      id,
-      skill
-    }: {
-      id: string;
-      skill: FormData;
-    }) => {
-      console.log("skill", skill.get("name"), skill.get("type"), skill.get("docsLink"), skill.get("isPublic"));
+    mutationFn: async ({ id, skill }: { id: string; skill: FormData }) => {
+      console.log(
+        "skill",
+        skill.get("name"),
+        skill.get("type"),
+        skill.get("docsLink"),
+        skill.get("isPublic")
+      );
       const { data } = await api.put(`/skills/${id}`, skill, {
         headers: {
           "Content-Type": "multipart/form-data",
@@ -72,12 +74,12 @@ export function useUpdateSkill() {
       return data;
     },
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['skills'] });
-      queryClient.invalidateQueries({ queryKey: ['skills', variables.id] });
-      toast.success('Skill updated successfully');
+      queryClient.invalidateQueries({ queryKey: ["skills"] });
+      queryClient.invalidateQueries({ queryKey: ["skills", variables.id] });
+      toast.success("Skill updated successfully");
     },
     onError: (error: AxiosError<ErrorResponse>) => {
-      toast.error(error.response?.data?.message || 'Failed to update skill');
+      toast.error(error.response?.data?.message || "Failed to update skill");
     },
   });
 }
@@ -90,11 +92,11 @@ export function useDeleteSkill() {
       await api.delete(`/skills/${id}`);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['skills'] });
-      toast.success('Skill deleted successfully');
+      queryClient.invalidateQueries({ queryKey: ["skills"] });
+      toast.success("Skill deleted successfully");
     },
     onError: (error: AxiosError<ErrorResponse>) => {
-      toast.error(error.response?.data?.message || 'Failed to delete skill');
+      toast.error(error.response?.data?.message || "Failed to delete skill");
     },
   });
-} 
+}

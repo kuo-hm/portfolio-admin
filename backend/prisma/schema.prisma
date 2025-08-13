@@ -20,6 +20,8 @@ model Project {
   isPublic    Boolean  @default(false)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  skills      Skill[]  
+
 }
 
 model Skill {
@@ -32,7 +34,10 @@ model Skill {
   isPublic      Boolean   @default(false)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
+  projects      Project[]   
+
 }
+
 
 model Resume {
   id        String   @id @default(uuid())

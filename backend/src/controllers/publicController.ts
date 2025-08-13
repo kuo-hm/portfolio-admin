@@ -26,6 +26,7 @@ export const publicController = {
         imageUrl: true,
         createdAt: true,
         updatedAt: true,
+        skills: true,
       },
       orderBy: { createdAt: "desc" },
       skip,
